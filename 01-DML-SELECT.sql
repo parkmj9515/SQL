@@ -54,7 +54,7 @@ SELECT first_name, salary, salary * 12 FROM employees;
 -- 다음 문장을 실행해보자
 SELECT first_name, job_id, job_id * 12 FROM employees; 
 -- 위 코드 오류의 원인 : job_id는 문자열이다 (varchar)
-DESC employees * ; 
+
 
 ---------------------------------------------------------------------------------------------------------------------------
 -- 별칭 Alias : Projection 단계에서 출력용으로 표시되는 임시 컬럼제목
