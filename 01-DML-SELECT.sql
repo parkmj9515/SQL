@@ -119,7 +119,7 @@ SELECT first_name, salary FROM employees where LOWER(first_name) like '___a%';
 SELECT first_name, salary FROM employees where LOWER(first_name) like '_a__';
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
--- 연습문제
+-- 연습문제    
 
 -- 부서ID가 90인 사원중 급여가 20000 이상인 사원 이름과 급여
 SELECT first_name , department_id , salary FROM employees where department_id = 90 and salary >= 20000;
