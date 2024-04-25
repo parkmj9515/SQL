@@ -31,22 +31,6 @@ SELECT employee_id, first_name, last_name FROM employees;
 -- 산술연산 : 기본적인 산술연산을 수행 할 수 있다
 SELECT 3.14159 * 10*10 FROM dual; -- 특정테이블의 값이 아닌 시스템으로 부터 데이터를 받아오고자 할때 : Dual(가상테이블)
 
--- NULL
--- 이름 급여 커미션 비율을 출력
-SELECT first_name,salary, commission_pct FROM employees;
-
--- 이름 커미션을포함한 급여를 출력
-SELECT first_name , salary, commission_pct, salary + salary *commission_pct  FROM employees; 
--- NULL이 포함된 연산식의 결과는 NULL
--- NULL을 처리하기 위한 함수
--- NVL(표현식1,표현식1이 NULL일 경우의 대체값
-
--- NVL함수 활용 대체값 계산
-SELECT first_name, salary, commission_pct, salary+salary * NVL(commission_pct , 0)  FROM employees;
-
--- NULL은 0이나 공백문자와는 다르게 빈 값이다
--- NULL은 산술연산 결과 통계 결과를 왜곡이 생김 > NULL처리는 철저히 해야함
-
 
 -- 특정 컬럼의 값을 산술 연산에 포함
 SELECT first_name, salary, salary * 12 FROM employees;
@@ -56,7 +40,10 @@ SELECT first_name, job_id, job_id * 12 FROM employees;
 -- 위 코드 오류의 원인 : job_id는 문자열이다 (varchar)
 
 
+
 ---------------------------------------------------------------------------------------------------------------------------
+--24.04.24
+
 -- 별칭 Alias : Projection 단계에서 출력용으로 표시되는 임시 컬럼제목
 -- 컬럼명 뒤에 별칭을 붙이거나
 -- 컬럼명 뒤에 as별칭
@@ -144,3 +131,4 @@ SELECT first_name , salary FROM employees  where salary >=10000  order by salary
 SELECT department_id ,salary ,first_name FROM employees  order by department_id , salary desc;
 -- 정렬기준을 어떻게 세우느냐에 따라서 성능 출력결과에 영향을 미칠수있다
 
+---------------------------------------------------------------------------------------------------------------------------------------
