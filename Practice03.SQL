@@ -148,14 +148,15 @@ job_history 테이블은 과거의 담당업무의 데이터를 가지고 있다
 디, 시작일, 종료일을 출력하세요.
 이름은 first_name과 last_name을 합쳐 출력합니다.(2건) */
 
-SELECT emp.employee_id 사번,
+SELECT  emp.employee_id 사번,
         emp.first_name || ' ' || last_name 이름,
-        j.job_id 업무아이디,
-        j.start_date 시작일,
-        j.end_date 종료일
+        jh.job_id 업무아이디,
+        jh.start_date 시작일,
+        jh.end_date 종료일
+        
 FROM employees emp
-      join job_history j
-          on emp.employee_id = j.employee_id  --join 조건
+      join job_history jh
+          on emp.employee_id = jh.employee_id  --join 조건
 where j.job_id = "AC_ACCOUNT";
 
 /*문제8.
@@ -169,12 +170,13 @@ SELECT dept.department_id 부서번호,
         loc.city 위치한도시,
         cou.country_name 나라이름,
         reg.region_name 지역
+        
 FROM departments dept
     join employees man on dept.manager_id = man.employee_id
     join locations loc on dept.location_id = loc.location_id
     join countries cou on loc.country_id = cou.country_id
     join regions reg on cou.country_id = reg.region_id
-ORDER BY dept.department_id asc;    
+ORDER BY dept.department_id asc; 
 
 /* 문제9.
 각 사원(employee)에 대해서 사번(employee_id), 이름(first_name), 부서명
