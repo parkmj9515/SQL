@@ -63,10 +63,10 @@ INNER JOIN employees emp ON j.job_id = emp.job_id
 GROUP BY j.job_title
 ORDER BY SUM(emp.salary) DESC;
 
-SELECT j.job_title FROM jobs j
+SELECT j.job_title FROM jobs j 
 INTERSECT 
 select sum(emp.salary) FROM employees emp
-ORDER BY SUM(emp.salary) DESC;
+ORDER BY sum(emp.salary) DESC;
 --6-2 서브쿼리
 SELECT job_title, (SELECT SUM(salary)   
                     FROM employees
