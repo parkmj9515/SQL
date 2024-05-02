@@ -54,6 +54,17 @@ GRANT select on employees TO himedia;
 select * FROM hr.employees; -- hr.employees에 select 할수있는 권한
 select * FROM hr.departments; -- hr.departments 권한은없다 (찾을수없음)
 
+-- 현재 사용자에게 부여된 ROLE의 확인
+select * FROM user_role_privs;
+-- connect 와 resource 역할은 어떤 권한으로 구성되어 있나
+-- sysdba로 진행 : cmd > sqlplus sys/oracle as sysdba
+-- desc role_sys_privs;
+-- connect 롤에는 어떤 권한이 포함되어 있나
+-- SELECT PRIVILEGE FROM ROLE_SYS_PRIVS WHERE ROLE='CONNECT';
+-- RESOURCE 롤에는 어떤 권한이 포함 되어 있나
+-- SELECT PRIVILEGE FROM ROLE_SYS_PRIVS WHERE ROLE='RESOURCE';
+
+
 --------------------------------DDL
 -- 스키마 내의 모든 테이블을 확인
 select * FROM tabs; -- taps: table 정보 dictionary
@@ -80,3 +91,166 @@ DROP TABLE emp_it;
 select * FROM tabs;
 
 Desc book;
+
+----------------------------------------------------------------------
+--24.05.02
+-- author 테이블 생성
+CREATE TABLE author (author_id number(10),
+                    author_name varchar(100) not null,
+                    author_desc varchar(500),
+                    primary key (author_id));
+-- author table 확인        
+desc author;
+
+-- book table에 author 컬럼 삭제
+-- 나중에 author_id 컬럼추가 >author.author_id와 참조 연결할 예정
+ALTER TABLE book DROP COLUMN author;
+DESC book
+
+-- 테이블에 author_id 컬럼 추가
+-- author.author_id를 참조하는 컬럼 author.author_id 컬럼과 같은 형태여야 한다
+ALTER TABLE book ADD (author_id NUMBER(10));
+desc book;
+
+-- book 테이블의 book_id도 author 테이블의 pk와 같은 데이터타입인 NUMBER(10)으로 변경
+ALTER TABLE book MODIFY (book_id NUMBER(10));;
+DESC book;
+
+-- book테이블의 book_id 컬럼에 primary key 제약조건을 부여
+ALTER TABLE book
+ADD CONSTRAINT pk_book_id PRIMARY KEY (book_id);
+DESC book;
+
+-- book 테이블의 author_id 컬럼과 author 테이블의 author)id를 rx로 연결
+ALTER TABLE book
+ADD CONSTRAINT fk_author_id
+FOREIGN KEY (author_id)
+REFERENCES author(author_id);
+DESC book;
+
+-- DICTIONARY 
+
+-- USER_ : 현재 로그인된 사용자에게 허용된 뷰
+-- ALL_ : 모든 사용자 뷰
+-- DBA_ : DBA에게 허용된 뷰
+
+-- 모든 DICTIONARY 확인
+--SELECT * FROM DICTIONARY;
+
+-- 사용자 스키마 객체 : USER_OBJECTS
+SELECT * FROM USER_OBJECTS;
+-- 사용자 스키마의 이름과 타입 정보 출력
+SELECT OBJECT_NAME, OBJECT_TYPE FROM USER_OBJECTS;
+
+-- 제약조건의 확인
+SELECT * FROM USER_CONSTRAINTS;
+SELECT CONSTRAINT_NAME, CONSTRAINT_TYPE,SEARCH_CONDITION,TABLE_NAME FROM USER_CONSTRAINTS;
+
+-- BOOK 테이블에 적용된 제약조건의 확인
+SELECT CONSTRAINT_NAME, CONSTRAINT_TYPE,SEARCH_CONDITION FROM USER_CONSTRAINTS WHERE TABLE_NAME = 'BOOK';
+
+----------------------------------------INSERT
+
+-- INSERT : 테이블에 새 레코드(튜플) 추가
+-- 제공된 컬럼 목록의 순서와 타입,값 목록의 순서와 타입이 일치해야 함
+-- 컬럼 목록을 제공하지 않으면 테이블 생성시 정의된 컬럼의 순서와 타입을 따른다
+
+-- 컬럼 목록이 제시되지 않았을 때
+INSERT INTO author values(1,'박경리','토지 작가');
+
+-- 컬럼 목록을 제시했을 경우 > 제시한 컬럼의 순서와 타입대로 값 목록을 제공해야 한다
+INSERT INTO author (author_id,author_name) values(2,'김영하');
+
+-- 컬럼 목록을 제공했을때, 테이블 생성시 정의된 컬럼의 순서와 상관없이 데이터 제공 가능
+INSERT INTO author (AUTHOR_NAME,AUTHOR_ID,AUTHOR_DESC) values('류츠신', 3 ,'삼체 작가');
+
+ALTER TABLE author RENAME COLUMN AUTHOR_NAME TO author_name;
+
+ROLLBACK; -- 반영취소
+SELECT * FROM author;
+
+
+INSERT INTO author values(1,'박경리','토지 작가');
+insert INTO author ( author_id,author_name) values(2,'김영하');
+INSERT INTO author (author_name,author_id,author_desc) values('류츠신',3,'삼체 작가');
+
+select * FROM author;
+
+COMMIT; -- 변경사항 반영
+
+SELECT * FROM author;
+
+----------------------------------UPDATE + WHERE
+-- 특정 레코드의 컬럼 값을 변경한다
+-- where 절이 없으면 모든 레코드가 변경
+-- 가급적 where 절로 변경하고자 하는 레코드를 지정하도록함
+UPDATE author set author_desc = '알쓸신잡 출연';
+select * from author; --> 3개의 DESC값 다 변경되었음
+
+ROLLBACK;
+
+SELECT * FROM AUTHOR;
+
+UPDATE author set author_desc = '알쓸신잡 출연'
+WHERE author_name = '김영하';
+select * from author;
+
+commit;
+
+
+--------------DELETE + WHERE
+-- 테이블로부터 특정 레코드를 삭제
+-- WHERE 절이 없으면 모든 레코드 삭제 *주의
+
+-- 연습
+-- HR.EMPLOYEES 테이블을 기반으로 department_id(10,20,30)인 직원들만 새 테이블 emp123으로 생성
+CREATE TABLE emp123 as (select * FROM hr.employees
+                        where department_id IN(10,20,30));
+                        
+desc emp123;
+select first_name,salary,department_id FROM emp123;
+
+-- 부서가 30번인 직원들의 급여를 10% 인상
+UPDATE emp123 set salary = salary + salary * 0.1
+where department_id = 30;
+select * from emp123;
+
+-- job_id = MK로 시작하는 직원을 삭제
+DELETE FROM emp123 where job_id LIKE 'MK_%';
+select * from emp123;
+
+DELETE FROM emp123;     -- where 절이 생략된 DELETE문 > 모든 레코드를 삭제 -> 주의
+select * from emp123;
+ROLLBACK;       
+select * from emp123;
+
+------------------------------Transaction
+-- 트랜잭션 테스트 테이블
+CREATE TABLE t_test(log_text VARCHAR2(100));
+
+-- 첫번째 DML이 수행된 시점에서 Transaction
+INSERT INTO t_test VALUES('트랜잭션 시작');
+SELECT * FROM t_test;
+INSERT INTO t_test VALUES('데이터 INSERT');
+SELECT * FROM t_test;
+
+SAVEPOINT sp1; -- savepoint 설정
+
+INSERT INTO t_test VALUES('데이터 2 INSERT');
+SELECT * FROM t_test;
+
+SAVEPOINT sp2;
+
+UPDATE t_test SET log_text = '업데이트';
+
+SELECT * FROM t_test;
+ROLLBACK sp1; -- sp1 세이브포인트로 귀환
+SELECT * FROM t_test;
+
+INSERT INTO t_test VALUES('데이터 3 INSERT');
+SELECT * FROM t_test;
+
+-- 반영은 COMMIT or 취소:ROLLBACK
+-- 명시적으로 Transaction 종료
+COMMIT;
+SELECT * FROM t_test;
