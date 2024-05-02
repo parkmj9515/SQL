@@ -38,9 +38,9 @@ ORDER BY salary desc;
 select  emp.manager_id 매니저아이디,
         first_name 이름,
         dept.manager_id,
-        round(avg(salary)) 평균급여,
+        avg(salary) 평균급여,
         min(salary) 최소급여,
-        max(salary) 최대급여,
+        max(salary) 최대급여
         
 FROM employees emp , departments dept
 where emp.employee_id = dept.manager_id
