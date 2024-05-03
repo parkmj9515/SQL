@@ -115,7 +115,7 @@ where emp.salary = t.salary
 ORDER BY emp.salary desc;
 
 -- 부서별 최고급여
---select department_id, max(salary) FROM employees GROUP BY department_id;
+select department_id, max(salary) FROM employees GROUP BY department_id;
 
 
 /*문제6.
