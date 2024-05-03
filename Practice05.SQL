@@ -38,12 +38,15 @@ ORDER BY salary desc;
 select  emp.manager_id 매니저아이디,
         first_name 이름,
         dept.manager_id,
-        avg(salary) 평균급여,
+        avg(salary) 평균급여 ,
         min(salary) 최소급여,
         max(salary) 최대급여
         
-FROM employees emp , departments dept
-where emp.employee_id = dept.manager_id
+FROM employees emp , departments dept ,jobs j
+where emp.employee_id = dept.manager_id 
+AND salary >= 5000
+AND job_title LIKE '%Manager%'
+AND hire_date < '15/12/31'
 group by first_name,emp.manager_id,dept.manager_id
 ORDER BY avg(salary) desc;
 
@@ -72,14 +75,15 @@ ORDER BY hire_date;
 /*문제6.
 가장 늦게 입사한 직원의 이름(first_name last_name)과 연봉(salary)과 근무하는 부서 이름
 (department_name)은?*/
-SELECT  to_char(max(hire_date),'YYYY"년"MM"월"DD"일"') 마지막입사일,
+SELECT  to_char(max(hire_date),'yy/mm/dd'),
         first_name || ' ' || last_name 이름,
-        salary*12 연봉,
-        department_name 부서명
-FROM employees , departments
-where max(hire_date)
-group by first_name || ' ' || last_name,salary*12,department_name
-order by max(hire_date) desc;
+        emp.salary*12 연봉,
+        dept.department_name 부서명
+FROM employees emp , departments dept
+having max(hire_date) = '18/04/21'
+GROUP BY first_name || ' ' || last_name,emp.salary*12,dept.department_name
+ORDER BY max(hire_date) desc;
+
 
 select  to_char(max(hire_date),'YYYY"년"MM"월"DD"일"')
 from employees;
@@ -117,9 +121,19 @@ ORDER BY emp.employee_id asc;
 
 /*문제8.
 평균 급여(salary)가 가장 높은 부서는?*/
+SELECT re.region_name
+FROM employees emp
+JOIN regions re ON emp.department_id = dept.department_id
+GROUP BY dept.department_name
+ORDER BY round(AVG(emp.salary)) DESC;
 
 /*문제9.
 평균 급여(salary)가 가장 높은 지역은?*/
+SELECT dept.department_name
+FROM employees emp
+JOIN departments dept ON emp.department_id = dept.department_id
+GROUP BY dept.department_name
+ORDER BY round(AVG(emp.salary)) DESC;
 
 /*문제10.
 평균 급여(salary)가 가장 높은 업무는?*/
