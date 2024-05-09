@@ -75,65 +75,69 @@ ORDER BY hire_date;
 /*문제6.
 가장 늦게 입사한 직원의 이름(first_name last_name)과 연봉(salary)과 근무하는 부서 이름
 (department_name)은?*/
-SELECT  to_char(max(hire_date),'yy/mm/dd'),
-        first_name || ' ' || last_name 이름,
+SELECT  first_name || ' ' || last_name 이름,
         emp.salary*12 연봉,
-        dept.department_name 부서명
-FROM employees emp , departments dept
-having max(hire_date) = '18/04/21'
-GROUP BY first_name || ' ' || last_name,emp.salary*12,dept.department_name
-ORDER BY max(hire_date) desc;
+        dept.department_name 부서명,
+        hire_date
+        
+FROM employees emp join departments dept
+                    ON emp.department_id = dept.department_id
+where emp.hire_date = (select max(hire_date) FROM employees);
 
+SELECT e.first_name || '' || e.last_name, e.salary, d.department_name
+FROM employees e
+JOIN departments d ON e.department_id = d.department_id
+WHERE e.hire_date = (SELECT MAX(hire_date) FROM employees);
 
-select  to_char(max(hire_date),'YYYY"년"MM"월"DD"일"')
-from employees;
 /*문제7.
 평균연봉(salary)이 가장 높은 부서 직원들의 직원번호(employee_id), 이름(firt_name), 성
 (last_name)과 업무(job_title), 연봉(salary)을 조회하시오.*/
-select  
-        emp.employee_id 사번,
-        emp.first_name 이름,
-        emp.last_name 성,
-        j.job_title 업무,
-        avg(salary*12) ,
-        emp.salary*12 연봉
-FROM employees emp, departments dept, jobs j 
-where dept.department_id = emp.department_id and
-        emp.job_id = j.job_id
-GROUP BY emp.employee_id,
-        emp.first_name,
-        emp.last_name,
-        j.job_title,
-        emp.salary*12     
-ORDER BY emp.salary*12 desc;
         
 SELECT emp.employee_id 사번,
              emp.first_name 이름,
              emp.salary 급여,
+             avg(salary) 평균연봉,
              dept.department_name 부서명,
              j.job_title 현재업무
 
-FROM employees emp, departments dept, jobs j 
-where dept.department_id = emp.department_id and
-        emp.job_id = j.job_id
-ORDER BY emp.employee_id asc;
+FROM employees emp join departments dept on emp.department_id = dept.department_id
+join jobs j on emp.job_id = j.job_id  
+group by emp.employee_id,emp.first_name, emp.salary, dept.department_name, j.job_title
+ORDER BY avg(salary) desc;
 
 
 /*문제8.
 평균 급여(salary)가 가장 높은 부서는?*/
-SELECT re.region_name
-FROM employees emp
-JOIN regions re ON emp.department_id = dept.department_id
-GROUP BY dept.department_name
-ORDER BY round(AVG(emp.salary)) DESC;
+WITH dept_avg_sal AS (
+  SELECT department_id, AVG(salary) as avg_salary
+  FROM employees
+  GROUP BY department_id
+)
+SELECT d.department_name
+FROM departments d
+JOIN dept_avg_sal das ON d.department_id = das.department_id
+WHERE das.avg_salary = (SELECT MAX(avg_salary) FROM dept_avg_sal);
+
 
 /*문제9.
 평균 급여(salary)가 가장 높은 지역은?*/
-SELECT dept.department_name
-FROM employees emp
-JOIN departments dept ON emp.department_id = dept.department_id
-GROUP BY dept.department_name
-ORDER BY round(AVG(emp.salary)) DESC;
+SELECT region_name, AVG(salary)  average_salary
+FROM regions re  join countries co on re.region_id = co.region_id
+                 join locations lct on co.country_id = lct.country_id
+                join department dept on lct.location_id = dept.location_id
+                join employees emp on dept.department_id = emp.department_id
+where avg(emp.salary) =  (select max(salary) from employees;
+
+
+
 
 /*문제10.
 평균 급여(salary)가 가장 높은 업무는?*/
+WITH job_avg_sal AS (
+  SELECT job_title, AVG(salary) as avg_salary
+  FROM jobs j join employees emp on j.job_id = emp.job_id
+  GROUP BY job_title
+)
+SELECT job_title
+FROM job_avg_sal
+WHERE avg_salary = (SELECT MAX(avg_salary) FROM job_avg_sal);

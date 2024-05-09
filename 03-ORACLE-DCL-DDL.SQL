@@ -254,3 +254,17 @@ SELECT * FROM t_test;
 -- 명시적으로 Transaction 종료
 COMMIT;
 SELECT * FROM t_test;
+
+--------------------------------------------------------------------------
+--24.05.08
+delete from author;
+commit;
+select * from author;
+desc book;
+
+-- LIST
+select author_id,author_name,author_desc FROM author;
+
+select * FROM author;
+select * FROM employees;
+SELECT first_name || ' ' || last_name, email, phone_number, hire_date  FROM employees WHERE lower(first_name) Like '&' or lower(last_name) Like '%';
