@@ -18,7 +18,7 @@ where salary > 3000 and commission_pct is null and manager_id is not null;
 select emp.employee_id 직원번호,
         emp.first_name 이름,
         emp.salary 급여,
-        TO_CHAR(emp.hire_date,'YYYY-MM-DD DAY') 입사일,
+        TO_CHAR(emp.hire_date,'YYYY"년"MM"월"DD"일"') 입사일,
         REPLACE(substr(emp.phone_number,3),'.','-') 전화번호,
         emp.department_id 부서번호
 FROM employees emp

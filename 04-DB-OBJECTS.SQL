@@ -134,15 +134,23 @@ SELECT * FROM USER_SEQUENCES;
 SELECT  * FROM USER_OBJECTS WHERE OBJECT_TYPE = 'SEQUENCE';
 
 -- 시퀀스 삭제
-DROP SEQUENCE my_seq;
+DROP SEQUENCE SEQ_PHONE_BOOK;
 select * from user_sequences;
 
 -- book table pk 현재 값 확인
-SELECT MAX(book_id) FROM book;
+SELECT book FROM book;
 
 
 CREATE SEQUENCE seq_book_id
     START WITH 3
     INCREMENT BY 1
     MAXVALUE 1000000
-    NOCACHE;    
+    NOCACHE;
+
+drop table book;
+drop table author;
+
+
+
+
+   
